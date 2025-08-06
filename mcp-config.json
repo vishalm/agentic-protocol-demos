@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "MESH": {
+      "command": "/Users/vishal.mishra/.local/bin/uv",
+      "args": [
+        "--directory",
+        "/Users/vishal.mishra/workspace/self/mcp-demo",
+        "run",
+        "--with",
+        "mcp",
+        "--with",
+        "fastmcp",
+        "python",
+        "mcp-server-test.py"
+      ]
+    }
+  }
+}
