@@ -11,7 +11,7 @@
         "--with",
         "fastmcp",
         "python",
-        "mcp-server-test.py"
+        "hybrid_server.py"
       ]
     }
   }
