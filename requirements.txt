@@ -4,3 +4,9 @@ openai-agents
 openai>=1.12.0
 google-api-python-client
 google_auth_oauthlib
+fastapi>=0.104.0
+uvicorn>=0.24.0
+websockets>=12.0
+pydantic>=2.5.0
+httpx>=0.25.0
+asyncio-mqtt>=0.16.0
