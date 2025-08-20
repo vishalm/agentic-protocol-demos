@@ -222,8 +222,8 @@ uv --version
 
 ```bash
 # Clone the repository
-git clone https://github.com/vishalm/mcp-demo.git
-cd mcp-demo
+git clone https://github.com/vishalm/agentic-protocol-demos.git
+cd agentic-protocol-demos
 
 # Install dependencies
 uv sync
@@ -272,7 +272,7 @@ Create `mcp-config.json` in your AI application:
       "command": "/path/to/uv",
       "args": [
         "--directory",
-        "/path/to/mcp-demo",
+        "/path/to/agentic-protocol-demos",
         "run",
         "--with",
         "mcp",
@@ -493,7 +493,7 @@ Successful connection will show:
 ## 📊 Project Structure
 
 ```
-mcp-demo/
+agentic-protocol-demos/
 ├── hybrid_server.py          # Main hybrid server (MCP + A2A)
 ├── a2a_server.py            # A2A protocol server
 ├── agent_manager.py          # Agent discovery and management
@@ -593,9 +593,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/vishalm/mcp-demo/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/vishalm/mcp-demo/discussions)
-- **Documentation**: [Project Wiki](https://github.com/vishalm/mcp-demo/wiki)
+- **Issues**: [GitHub Issues](https://github.com/vishalm/agentic-protocol-demos/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/vishalm/agentic-protocol-demos/discussions)
+- **Documentation**: [Project Wiki](https://github.com/vishalm/agentic-protocol-demos/wiki)
 
 ---
 

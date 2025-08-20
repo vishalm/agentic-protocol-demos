@@ -394,9 +394,9 @@ class A2AServer:
                         "type": "openapi",
                         "url": f"http://{default_server_config.host}:{default_server_config.port}/openapi.json"
                     },
-                    "logo_url": "https://github.com/vishalm/mcp-demo/raw/main/resources/MESH-I-1.png",
+                    "logo_url": "https://github.com/vishalm/agentic-protocol-demos/raw/main/resources/MESH-I-1.png",
                     "contact_email": "vishal.mishra@example.com",
-                    "legal_info_url": "https://github.com/vishalm/mcp-demo/blob/main/LICENSE"
+                    "legal_info_url": "https://github.com/vishalm/agentic-protocol-demos/blob/main/LICENSE"
                 }
                 
                 return ai_plugin

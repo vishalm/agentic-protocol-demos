@@ -4,7 +4,7 @@
       "command": "/Users/vishal.mishra/.local/bin/uv",
       "args": [
         "--directory",
-        "/Users/vishal.mishra/workspace/self/mcp-demo",
+        "/Users/vishal.mishra/workspace/self/agentic-protocol-demos",
         "run",
         "--with",
         "mcp",
