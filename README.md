@@ -428,6 +428,68 @@ The MCP Inspector provides a comprehensive interface for testing and debugging M
 - **Error Debugging**: Identify and fix protocol issues
 - **Tool Testing**: Execute individual tool calls for validation
 
+### Running MCP Inspector with MESH
+
+#### 1. Start MESH Server First
+```bash
+# Start the hybrid server (MCP + A2A)
+./run.sh start
+
+# Or start server only (no tests)
+./run.sh start-only
+```
+
+#### 2. Verify MCP Server Status
+```bash
+# Check if servers are running
+./run.sh status
+
+# Expected output:
+# ✅ MESH Hybrid Server is running
+#   - MCP: STDIO transport (active)
+#   - A2A: http://127.0.0.1:8080
+```
+
+#### 3. Launch MCP Inspector
+```bash
+# Install and run MCP Inspector
+pip install mcp-inspector
+mcp-inspector
+
+# Or use uv for faster installation
+uv run mcp-inspector
+```
+
+#### 4. Configure MCP Inspector
+When MCP Inspector launches:
+
+1. **Select Transport**: Choose "STDIO" transport
+2. **Set Command**: Enter `python hybrid_server.py`
+3. **Set Working Directory**: Navigate to your MESH project folder
+4. **Connect**: Click "Connect" to establish connection
+
+#### 5. Verify Connection
+Successful connection will show:
+- ✅ **MCP Server Connected**
+- 📋 **Available Tools**: List of MCP functions
+- 📚 **Resources**: Available data sources
+- ⚙️ **Prompts**: System configuration templates
+
+#### 6. Test MCP Tools
+```bash
+# In MCP Inspector, you can now:
+# - Browse available tools
+# - Execute tool calls
+# - View tool responses
+# - Monitor server logs
+# - Test resource access
+```
+
+#### 7. Stop MCP Inspector
+- Close the MCP Inspector application
+- Use `Ctrl+C` in the terminal running MESH server
+- Or run `./run.sh stop` to stop all servers
+
 ## 📊 Project Structure
 
 ```
@@ -442,7 +504,7 @@ mcp-demo/
 ├── mcp-config.json           # MCP configuration example
 ├── pyproject.toml            # Project dependencies
 ├── requirements.txt           # Python requirements
-└── resources/                # Documentation images
+└── resources/                # Doumentation images
     ├── A2A-1.png            # A2A Inspector screenshot
     ├── A2A-2.png            # Chat interface screenshot
     └── A2A-3.png            # Debug console screenshot
