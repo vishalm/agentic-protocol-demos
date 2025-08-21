@@ -46,7 +46,7 @@ command_exists() {
 check_python_version() {
     if command_exists python3; then
         PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
-        REQUIRED_VERSION="3.11"
+        REQUIRED_VERSION="3.10"
         
         if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$PYTHON_VERSION" | sort -V | head -n1)" = "$REQUIRED_VERSION" ]; then
             print_success "Python version $PYTHON_VERSION meets requirement ($REQUIRED_VERSION+)"
@@ -57,7 +57,7 @@ check_python_version() {
         fi
     elif command_exists python; then
         PYTHON_VERSION=$(python --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
-        REQUIRED_VERSION="3.11"
+        REQUIRED_VERSION="3.10"
         
         if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$PYTHON_VERSION" | sort -V | head -n1)" = "$REQUIRED_VERSION" ]; then
             print_success "Python version $PYTHON_VERSION meets requirement ($REQUIRED_VERSION+)"
@@ -67,7 +67,7 @@ check_python_version() {
             exit 1
         fi
     else
-        print_error "Python not found. Please install Python 3.11 or higher."
+        print_error "Python not found. Please install Python 3.10 or higher."
         exit 1
     fi
 }
@@ -118,6 +118,9 @@ check_project_structure() {
         "task_orchestrator.py"
         "a2a_config.py"
         "agent_capabilities.py"
+        "acp_server.py"
+        "acp_client.py"
+        "test-acp-functions.py"
         "prompts/mesh.md"
         "email-examples/3-way-intro.md"
         "email-examples/call-follow-up.md"
@@ -196,25 +199,23 @@ validate_configuration() {
 run_tests() {
     print_status "Running integration tests..."
     
-    # Run A2A integration tests
-    print_status "A2A integration tests removed - no longer needed"
-    print_status "Server is ready for use!"
-    
-    if [ $? -eq 0 ]; then
-        print_success "All A2A integration tests passed"
+    # Run ACP function tests
+    print_status "Running ACP function tests..."
+    if uv run python test-acp-functions.py; then
+        print_success "ACP function tests passed"
     else
-        print_warning "Some A2A integration tests failed, but continuing..."
+        print_warning "Some ACP function tests failed, but continuing..."
     fi
     
     # Run MCP function tests
-    print_status "MCP function tests removed - no longer needed"
-    print_status "Server is ready for use!"
-    
-    if [ $? -eq 0 ]; then
+    print_status "Running MCP function tests..."
+    if uv run python test-mcp-functions.py; then
         print_success "MCP function tests passed"
     else
         print_warning "Some MCP function tests failed, but continuing..."
     fi
+    
+    print_status "Server is ready for use!"
 }
 
 # Function to stop running servers
@@ -253,6 +254,21 @@ stop_servers() {
         fi
     fi
     
+    # Stop ACP server
+    if pgrep -f "acp_server.py" > /dev/null; then
+        print_status "Stopping ACP server..."
+        pkill -f "acp_server.py"
+        sleep 2
+        if ! pgrep -f "acp_server.py" > /dev/null; then
+            print_success "ACP server stopped"
+            ((stopped_count++))
+        else
+            print_warning "Force killing ACP server..."
+            pkill -9 -f "acp_server.py"
+            ((stopped_count++))
+        fi
+    fi
+    
     if [ $stopped_count -gt 0 ]; then
         print_success "Stopped $stopped_count server(s)"
         sleep 1
@@ -281,6 +297,72 @@ start_hybrid_server() {
     uv run python hybrid_server.py
 }
 
+# Function to start the ACP server
+start_acp_server() {
+    print_header "Starting MESH ACP Server"
+    
+    # Stop any existing servers first
+    stop_servers
+    
+    print_status "Server will be available on:"
+    echo "  - ACP: http://127.0.0.1:8081"
+    echo "  - API Docs: http://127.0.0.1:8081/docs"
+    echo "  - Health Check: http://127.0.0.1:8081/health"
+    echo ""
+    print_status "Press Ctrl+C to stop the server"
+    echo ""
+    
+    # Start the ACP server
+    print_status "Starting ACP server..."
+    uv run python acp_server.py
+}
+
+# Function to start all servers (Hybrid + ACP)
+start_all_servers() {
+    print_header "Starting MESH All Servers (MCP + A2A + ACP)"
+    
+    # Stop any existing servers first
+    stop_servers
+    
+    print_status "Servers will be available on:"
+    echo "  - MCP: STDIO transport (for AI applications)"
+    echo "  - A2A: http://127.0.0.1:8080"
+    echo "  - A2A WebSocket: ws://127.0.0.1:8080/ws"
+    echo "  - ACP: http://127.0.0.1:8081"
+    echo "  - ACP API Docs: http://127.0.0.1:8081/docs"
+    echo ""
+    print_status "Press Ctrl+C to stop all servers"
+    echo ""
+    
+    # Start hybrid server in background
+    print_status "Starting hybrid server in background..."
+    uv run python hybrid_server.py &
+    HYBRID_PID=$!
+    
+    # Wait a moment for hybrid server to start
+    sleep 3
+    
+    # Start ACP server in background
+    print_status "Starting ACP server in background..."
+    uv run python acp_server.py &
+    ACP_PID=$!
+    
+    # Wait a moment for ACP server to start
+    sleep 3
+    
+    print_status "All servers started. PIDs:"
+    echo "  - Hybrid Server: $HYBRID_PID"
+    echo "  - ACP Server: $ACP_PID"
+    echo ""
+    print_status "Monitoring servers... (Press Ctrl+C to stop all)"
+    
+    # Wait for either server to stop
+    wait $HYBRID_PID $ACP_PID
+    
+    # Cleanup if we get here
+    stop_servers
+}
+
 # Function to show server status
 show_server_status() {
     print_status "Checking server status..."
@@ -298,6 +380,22 @@ show_server_status() {
             fi
         else
             print_warning "A2A server is not responding"
+        fi
+    fi
+    
+    # Check if ACP server is responding
+    if command_exists curl; then
+        print_status "Testing ACP server health..."
+        if curl -s http://127.0.0.1:8081/health > /dev/null 2>&1; then
+            print_success "ACP server is responding"
+            
+            # Get server info
+            server_info=$(curl -s http://127.0.0.1:8081/ 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                print_status "Server info: $server_info"
+            fi
+        else
+            print_warning "ACP server is not responding"
         fi
     fi
     
@@ -322,33 +420,48 @@ show_server_status() {
     else
         print_warning "A2A server process is not running"
     fi
+    
+    # Check if ACP server process is running
+    if pgrep -f "acp_server.py" > /dev/null; then
+        print_success "ACP server process is running"
+        
+        # Get process info
+        acp_pid=$(pgrep -f "acp_server.py")
+        print_status "ACP server PID: $acp_pid"
+    else
+        print_warning "ACP server process is not running"
+    fi
 }
 
 # Function to show usage information
 show_usage() {
-    print_header "MESH Hybrid Server Usage"
+    print_header "MESH Server Usage"
     
-    echo "This script sets up and runs the MESH hybrid server with both MCP and A2A protocols."
+    echo "This script sets up and runs MESH servers with MCP, A2A, and ACP protocols."
     echo ""
     echo "Usage:"
     echo "  ./run.sh [OPTION]"
     echo ""
     echo "Options:"
-echo "  setup     - Setup environment and install dependencies"
-echo "  test      - Run tests only"
-echo "  start     - Start the hybrid server"
-echo "  stop      - Stop running servers"
-echo "  restart   - Restart servers (stop + start)"
-echo "  status    - Check server status"
-echo "  help      - Show this help message"
+    echo "  setup     - Setup environment and install dependencies"
+    echo "  test      - Run tests only"
+    echo "  start     - Start the hybrid server (MCP + A2A)"
+    echo "  start-acp - Start the ACP server only"
+    echo "  start-all - Start all servers (MCP + A2A + ACP)"
+    echo "  stop      - Stop running servers"
+    echo "  restart   - Restart servers (stop + start)"
+    echo "  status    - Check server status"
+    echo "  help      - Show this help message"
     echo ""
     echo "Examples:"
-echo "  ./run.sh setup    # Setup everything"
-echo "  ./run.sh test     # Run tests only"
-echo "  ./run.sh start    # Start server only"
-echo "  ./run.sh stop     # Stop running servers"
-echo "  ./run.sh restart  # Restart servers"
-echo "  ./run.sh          # Full setup and start"
+    echo "  ./run.sh setup      # Setup everything"
+    echo "  ./run.sh test       # Run tests only"
+    echo "  ./run.sh start      # Start hybrid server only"
+    echo "  ./run.sh start-acp  # Start ACP server only"
+    echo "  ./run.sh start-all  # Start all servers"
+    echo "  ./run.sh stop       # Stop running servers"
+    echo "  ./run.sh restart    # Restart servers"
+    echo "  ./run.sh            # Full setup and start hybrid server"
     echo ""
     echo "For more information, see README.md"
 }
@@ -368,6 +481,11 @@ cleanup() {
         pkill -f "a2a_server.py"
     fi
     
+    if pgrep -f "acp_server.py" > /dev/null; then
+        print_status "Stopping ACP server..."
+        pkill -f "acp_server.py"
+    fi
+    
     print_success "Cleanup completed"
 }
 
@@ -378,7 +496,7 @@ fi
 
 # Main execution
 main() {
-    print_header "MESH Hybrid Server (MCP + A2A) Setup"
+    print_header "MESH Server Setup"
     
     # Parse command line arguments
     case "${1:-}" in
@@ -403,11 +521,25 @@ main() {
             exit 0
             ;;
         "start")
-            print_status "Starting server only..."
+            print_status "Starting hybrid server only..."
             check_python_version
             check_and_install_uv
             check_project_structure
             start_hybrid_server
+            ;;
+        "start-acp")
+            print_status "Starting ACP server only..."
+            check_python_version
+            check_and_install_uv
+            check_project_structure
+            start_acp_server
+            ;;
+        "start-all")
+            print_status "Starting all servers..."
+            check_python_version
+            check_and_install_uv
+            check_project_structure
+            start_all_servers
             ;;
         "stop")
             print_status "Stopping servers only..."
@@ -432,7 +564,7 @@ main() {
             ;;
         "")
             # No arguments - run full setup and start
-            print_status "Running full setup and start..."
+            print_status "Running full setup and start hybrid server..."
             ;;
         *)
             print_error "Unknown option: $1"
