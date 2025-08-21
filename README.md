@@ -614,6 +614,7 @@ MESH now supports three complementary protocols that work together to provide co
 - **Use Case**: Cross-platform integration, third-party agents, enterprise systems
 - **Features**: Agent registration, task management, message history
 
+```
 ### **How They Work Together**
 
 ```
