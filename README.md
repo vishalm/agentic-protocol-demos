@@ -1,6 +1,6 @@
 # MESH - Model Exchange Server Handler
 
-> **A powerful Model Context Protocol (MCP) server with A2A (Agent-to-Agent) integration that transforms any AI application into a sophisticated virtual assistant with email management, contact management, professional networking capabilities, and multi-agent collaboration.**
+> **A powerful Model Context Protocol (MCP) server that transforms any AI application into a sophisticated virtual assistant with email management, contact management, and professional networking capabilities.**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![MCP](https://img.shields.io/badge/MCP-1.12+-green.svg)](https://modelcontextprotocol.io)
@@ -10,25 +10,104 @@
 ## 🎯 Purpose & Vision
 
 ### **Why MESH Exists**
-In today's AI landscape, applications are often siloed and lack the ability to collaborate effectively. MESH bridges this gap by providing:
+In today's AI landscape, applications often lack the tools needed for professional workflows. MESH bridges this gap by providing:
 
-- **🔗 Protocol Unification**: Single server supporting both MCP and A2A protocols
-- **🤝 Multi-Agent Collaboration**: Enable AI agents to work together seamlessly
+- **🔗 MCP Integration**: Seamless integration with any MCP-compatible AI application
 - **📧 Professional Workflows**: Streamline email management and networking tasks
-- **🔄 Interoperability**: Connect different AI systems regardless of their native protocols
+- **📋 Template Management**: AI-powered email template suggestions
+- **👥 Contact Management**: Access and search through contact directories
 
 ### **The Problem We Solve**
-- **AI Silos**: Different AI applications can't communicate with each other
-- **Protocol Fragmentation**: MCP and A2A protocols exist separately, limiting integration
+- **Tool Limitations**: AI applications lack professional email and networking tools
 - **Workflow Complexity**: Professional tasks require coordination across multiple systems
-- **Development Overhead**: Building protocol bridges is time-consuming and error-prone
+- **Template Management**: Creating professional emails from scratch is time-consuming
+- **Contact Organization**: Managing professional relationships at scale is challenging
 
 ### **Our Solution**
-MESH provides a unified platform that:
-- ✅ **Unifies Protocols**: Single server handles both MCP and A2A
-- ✅ **Enables Collaboration**: AI agents can discover and work with each other
-- ✅ **Simplifies Development**: One integration point for multiple protocols
-- ✅ **Scales Workflows**: Complex tasks can be orchestrated across agents
+MESH provides a comprehensive toolset that:
+- ✅ **Enhances AI Applications**: Adds professional capabilities to any MCP client
+- ✅ **Streamlines Workflows**: Automates email composition and contact management
+- ✅ **Improves Productivity**: Provides ready-to-use templates and suggestions
+- ✅ **Maintains Professional Standards**: Ensures consistent, high-quality communication
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.11 or higher
+- uv package manager (recommended)
+
+### Installation
+
+#### Install uv (if not already installed):
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+#### Clone the repository:
+```bash
+git clone https://github.com/vishalm/agentic-protocol-demos.git
+cd agentic-protocol-demos
+```
+
+#### Install dependencies:
+```bash
+uv sync
+```
+
+#### Test the server:
+```bash
+# Test server functions
+uv run python test-mcp-functions.py
+
+# Run server in development mode
+uv run mcp dev mcp-server-test.py
+```
+
+### Configuration
+
+#### Adding MESH to Your AI Application
+Add the following configuration to your AI application (e.g., Claude Desktop, Cursor):
+
+```json
+{
+  "mcpServers": {
+    "MESH": {
+      "command": "/Users/vishal.mishra/.local/bin/uv",
+      "args": [
+        "--directory",
+        "/Users/vishal.mishra/workspace/self/agentic-protocol-demos",
+        "run",
+        "--with", "mcp",
+        "--with", "fastmcp",
+        "python",
+        "mcp-server-test.py"
+      ]
+    }
+  }
+}
+```
+
+💡 **Pro tip**: Run `python validate-config.py` to automatically generate the correct configuration for your system!
+
+## 🔧 Server Options
+
+### Simple MCP Server (Recommended for Testing)
+- **File**: `mcp-server-test.py`
+- **Use Case**: Testing with MCP Inspector, basic MCP integration
+- **Features**: Clean shutdown, no hanging issues, easy debugging
+- **Command**: `python mcp-server-test.py`
+
+### Hybrid Server (Advanced Usage)
+- **File**: `hybrid_server.py`
+- **Use Case**: Production deployment with both MCP and A2A protocols
+- **Features**: Multi-protocol support, subprocess management
+- **Command**: `python hybrid_server.py` (or use `./run.sh start`)
+
+> **Note**: The simple MCP server is recommended for testing and development. Use the hybrid server only when you need both MCP and A2A protocols.
 
 ## 🚀 Real-World Use Cases
 
@@ -339,6 +418,126 @@ The A2A server automatically generates its agent card at `/.well-known/agent-car
 ./run.sh logs
 ```
 
+## 🔍 MCP Inspector Testing
+
+### MCP Inspector Setup
+
+The MCP Inspector helps debug MCP protocol communication and tool calls.
+
+#### 1. Install MCP Inspector
+
+```bash
+# Install globally
+pip install mcp-inspector
+
+# Or use with uv
+uv run mcp-inspector
+```
+
+#### 2. Configure MCP Inspector
+
+When MCP Inspector launches:
+
+1. **Select Transport**: Choose "STDIO" transport
+2. **Set Command**: Enter `python mcp-server-test.py`
+3. **Set Working Directory**: Navigate to your MESH project folder
+4. **Connect**: Click "Connect" to establish connection
+
+#### 3. Test MCP Tools
+
+* List available tools
+* Test individual tool calls
+* Monitor tool execution
+* Debug tool responses
+
+### MCP Inspector in Action
+
+The MCP Inspector provides a comprehensive interface for testing and debugging MCP protocol communication. Here are key screenshots showing the MCP Inspector working with MESH:
+
+#### 1. Initial Connection Setup
+
+MCP Inspector Setup _Configuring the MCP Inspector to connect to the MESH server via STDIO transport_
+
+#### 2. Resources Management
+
+MESH Resources _Viewing available resources including email templates and contact directory_
+
+#### 3. Prompts Configuration
+
+MESH Prompts _Accessing the MESH assistant prompt template and global instructions_
+
+#### 4. Tools and Functions
+
+MESH Tools _Exploring available tools: email draft creation, contact management, and template suggestions_
+
+#### 5. Server Status and Logs
+
+MESH Server Logs _Monitoring server activity and connection status in real-time_
+
+### MCP Inspector Features
+
+* **Tool Discovery**: Automatically lists all available MCP tools
+* **Resource Management**: Browse and access MCP resources
+* **Prompt Configuration**: Set up system prompts and instructions
+* **Real-time Logging**: Monitor all MCP communication
+* **Error Debugging**: Identify and fix protocol issues
+* **Tool Testing**: Execute individual tool calls for validation
+
+### Running MCP Inspector with MESH
+
+#### 1. Start MESH Server First
+
+```bash
+# Test the server functions first
+python test-mcp-functions.py
+
+# Start the MCP server
+python mcp-server-test.py
+```
+
+#### 2. Launch MCP Inspector
+
+```bash
+# Install and run MCP Inspector
+pip install mcp-inspector
+mcp-inspector
+
+# Or use uv for faster installation
+uv run mcp-inspector
+```
+
+#### 3. Configure MCP Inspector
+
+When MCP Inspector launches:
+
+1. **Select Transport**: Choose "STDIO" transport
+2. **Set Command**: Enter `python mcp-server-test.py`
+3. **Set Working Directory**: Navigate to your MESH project folder
+4. **Connect**: Click "Connect" to establish connection
+
+#### 4. Verify Connection
+
+Successful connection will show:
+
+* ✅ **MCP Server Connected**
+* 📋 **Available Tools**: List of MCP functions
+* 📚 **Resources**: Available data sources
+* ⚙️ **Prompts**: System configuration templates
+
+#### 5. Test MCP Tools
+
+##### In MCP Inspector, you can now:
+  - Browse available tools
+  - Execute tool calls
+  - View tool responses
+  - Monitor server logs
+  - Test resource access
+
+#### 6. Stop MCP Inspector
+
+* Close the MCP Inspector application
+* Use `Ctrl+C` in the terminal running MESH server
+
 ## 🔍 Inspector Tools Setup
 
 ### A2A Inspector Setup
@@ -494,7 +693,10 @@ Successful connection will show:
 
 ```
 agentic-protocol-demos/
-├── hybrid_server.py          # Main hybrid server (MCP + A2A)
+├── mcp-server-test.py        # Main MESH MCP server
+├── test-mcp-functions.py     # Function testing script
+├── validate-config.py         # MCP configuration generator
+├── hybrid_server.py          # Hybrid server (MCP + A2A) - advanced usage
 ├── a2a_server.py            # A2A protocol server
 ├── agent_manager.py          # Agent discovery and management
 ├── task_orchestrator.py      # Workflow orchestration
@@ -504,7 +706,13 @@ agentic-protocol-demos/
 ├── mcp-config.json           # MCP configuration example
 ├── pyproject.toml            # Project dependencies
 ├── requirements.txt           # Python requirements
-└── resources/                # Doumentation images
+├── prompts/                  # MESH assistant prompt templates
+│   └── mesh.md               # Main prompt template
+├── email-examples/           # Email template examples
+│   ├── 3-way-intro.md        # 3-way introduction template
+│   └── call-follow-up.md     # Call follow-up template
+├── directory.csv             # Contact directory
+└── resources/                # Documentation images
     ├── A2A-1.png            # A2A Inspector screenshot
     ├── A2A-2.png            # Chat interface screenshot
     └── A2A-3.png            # Debug console screenshot
