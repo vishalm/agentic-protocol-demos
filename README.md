@@ -589,6 +589,8 @@ flowchart LR
     style Contact fill:#fff3e0
     style Template fill:#fff3e0
     style Agent fill:#fff3e0
+    
+```
 
 ## 🏗️ Architecture Overview
 
@@ -614,7 +616,7 @@ MESH now supports three complementary protocols that work together to provide co
 - **Use Case**: Cross-platform integration, third-party agents, enterprise systems
 - **Features**: Agent registration, task management, message history
 
-```
+
 ### **How They Work Together**
 
 ```
