@@ -381,6 +381,35 @@ sequenceDiagram
     Note over AI: Process and display result
 ```
 
+### ACP (Agent Communication Protocol) Communication Flow
+
+```mermaid
+sequenceDiagram
+    participant Client as ACP Client
+    participant ACPServer as MESH ACP Server
+    participant AgentManager as Agent Manager
+    participant TaskProcessor as Task Processor
+    participant ExternalAgents as External ACP Agents
+
+    Client->>ACPServer: POST /agents/register
+    ACPServer->>AgentManager: Register agent
+    AgentManager->>ACPServer: Agent registered
+    ACPServer->>Client: Registration success
+
+    Client->>ACPServer: POST /messages (task)
+    Note over ACPServer: Process task message
+    ACPServer->>TaskProcessor: Route task
+    TaskProcessor->>ExternalAgents: Execute task
+    
+    ExternalAgents->>TaskProcessor: Task result
+    TaskProcessor->>ACPServer: Process result
+    ACPServer->>Client: Response message
+    
+    Note over Client: Handle response
+    Client->>ACPServer: GET /tasks/{id}
+    ACPServer->>Client: Task status
+```
+
 ### A2A (Agent-to-Agent) Communication Flow
 
 ```mermaid
@@ -414,60 +443,215 @@ sequenceDiagram
     A2AInspector->>User: Display result
 ```
 
-### Hybrid Server Architecture
+### MESH Complete Architecture (MCP + A2A + ACP)
 
 ```mermaid
 graph TB
-    subgraph "MESH Hybrid Server"
+    subgraph "MESH Server Ecosystem"
         subgraph "MCP Layer"
             MCP[FastMCP Server]
             MCPTools[MCP Tools Registry]
+            MCPHandler[MCP Handler]
         end
         
         subgraph "A2A Layer"
             A2AServer[A2A Protocol Server]
-            AgentManager[Agent Manager]
-            TaskOrchestrator[Task Orchestrator]
+            A2AHandler[A2A Handler]
+            JSONRPC[JSON-RPC 2.0]
+        end
+        
+        subgraph "ACP Layer"
+            ACPServer[ACP Server]
+            ACPHandler[ACP Handler]
+            RESTAPI[REST API]
         end
         
         subgraph "Core Services"
             EmailService[Email Service]
             ContactService[Contact Service]
             NetworkService[Network Service]
+            TemplateService[Template Service]
         end
         
-        subgraph "Protocol Handlers"
-            MCPHandler[MCP Handler]
-            A2AHandler[A2A Handler]
-            JSONRPC[JSON-RPC 2.0]
+        subgraph "Agent Management"
+            AgentManager[Agent Manager]
+            TaskOrchestrator[Task Orchestrator]
+            MessageRouter[Message Router]
         end
     end
     
     subgraph "External Systems"
         AIApp[AI Application]
         A2AInspector[A2A Inspector]
-        ExternalAgents[External A2A Agents]
+        ACPClient[ACP Client]
+        ExternalAgents[External Agents]
     end
     
+    %% MCP Connections
     AIApp <--> MCP
-    A2AInspector <--> A2AServer
-    ExternalAgents <--> AgentManager
-    
     MCP --> MCPTools
+    MCPTools --> CoreServices
+    
+    %% A2A Connections
+    A2AInspector <--> A2AServer
     A2AServer --> AgentManager
     A2AServer --> TaskOrchestrator
     
+    %% ACP Connections
+    ACPClient <--> ACPServer
+    ACPServer --> AgentManager
+    ACPServer --> TaskOrchestrator
+    ACPServer --> MessageRouter
+    
+    %% Cross-Protocol Integration
     AgentManager --> ExternalAgents
     TaskOrchestrator --> ExternalAgents
+    MessageRouter --> ExternalAgents
     
-    MCPTools --> CoreServices
+    %% Service Integration
     AgentManager --> CoreServices
     TaskOrchestrator --> CoreServices
+    MessageRouter --> CoreServices
     
+    %% Protocol Handlers
     MCPHandler --> MCP
     A2AHandler --> A2AServer
+    ACPHandler --> ACPServer
+    RESTAPI --> ACPServer
     JSONRPC --> A2AServer
 ```
+
+### Protocol Integration & Data Flow
+
+```mermaid
+flowchart LR
+    subgraph "Client Applications"
+        MCPClient[MCP Client<br/>AI Applications]
+        A2AClient[A2A Client<br/>Inspector Tools]
+        ACPClient[ACP Client<br/>Agent Systems]
+    end
+    
+    subgraph "MESH Protocol Layer"
+        MCP[MCP Server<br/>STDIO Transport]
+        A2A[A2A Server<br/>HTTP/WebSocket]
+        ACP[ACP Server<br/>REST API]
+    end
+    
+    subgraph "Shared Services"
+        Email[Email Service]
+        Contact[Contact Service]
+        Template[Template Service]
+        Agent[Agent Manager]
+    end
+    
+    subgraph "Data Sources"
+        Directory[Contact Directory]
+        Templates[Email Templates]
+        Prompts[System Prompts]
+    end
+    
+    %% Client to Protocol connections
+    MCPClient --> MCP
+    A2AClient --> A2A
+    ACPClient --> ACP
+    
+    %% Protocol to Services connections
+    MCP --> Email
+    MCP --> Contact
+    MCP --> Template
+    MCP --> Agent
+    
+    A2A --> Email
+    A2A --> Contact
+    A2A --> Template
+    A2A --> Agent
+    
+    ACP --> Email
+    ACP --> Contact
+    ACP --> Template
+    ACP --> Agent
+    
+    %% Services to Data connections
+    Email --> Templates
+    Contact --> Directory
+    Template --> Templates
+    Agent --> Prompts
+    
+    %% Cross-protocol communication
+    MCP -.-> ACP
+    A2A -.-> ACP
+    ACP -.-> A2A
+    
+    style MCP fill:#e1f5fe
+    style A2A fill:#f3e5f5
+    style ACP fill:#e8f5e8
+    style Email fill:#fff3e0
+    style Contact fill:#fff3e0
+    style Template fill:#fff3e0
+    style Agent fill:#fff3e0
+
+## 🏗️ Architecture Overview
+
+### **Three-Protocol Architecture**
+
+MESH now supports three complementary protocols that work together to provide comprehensive AI agent capabilities:
+
+#### **1. MCP (Model Context Protocol)**
+- **Purpose**: Direct AI application integration
+- **Transport**: STDIO (standard input/output)
+- **Use Case**: AI assistants, coding tools, desktop applications
+- **Features**: Tool calling, resource access, prompt management
+
+#### **2. A2A (Agent-to-Agent)**
+- **Purpose**: Multi-agent collaboration and orchestration
+- **Transport**: HTTP + WebSocket
+- **Use Case**: Complex workflows, agent coordination, real-time communication
+- **Features**: Agent discovery, message routing, workflow orchestration
+
+#### **3. ACP (Agent Communication Protocol)**
+- **Purpose**: Standardized agent interoperability
+- **Transport**: RESTful HTTP API
+- **Use Case**: Cross-platform integration, third-party agents, enterprise systems
+- **Features**: Agent registration, task management, message history
+
+### **How They Work Together**
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   MCP Client    │    │   A2A Client    │    │   ACP Client    │
+│                 │    │                 │    │                 │
+│ • Claude        │    │ • Inspector     │    │ • Agent System  │
+│ • Cursor        │    │ • Web Tools     │    │ • Enterprise    │
+│ • AI Apps       │    │ • Real-time     │    │ • Integration   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    MESH Server Ecosystem                        │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ MCP Server  │  │ A2A Server  │  │ ACP Server  │            │
+│  │ (STDIO)     │  │ (HTTP/WS)   │  │ (REST API)  │            │
+│  └─────────────┘  └─────────────┘  └─────────────┘            │
+│         │               │               │                      │
+│         └───────────────┼───────────────┘                      │
+│                         ▼                                      │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Shared Core Services                       │   │
+│  │  • Email Management  • Contact Management              │   │
+│  │  • Template System   • Agent Management                │   │
+│  │  • Task Orchestration • Message Routing                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### **Protocol Benefits**
+
+- **🔄 Interoperability**: Agents built for any protocol can work together
+- **📈 Scalability**: Add new protocols without changing existing ones
+- **🛠️ Flexibility**: Choose the right protocol for your use case
+- **🔗 Integration**: Seamless communication between different systems
+- **📊 Monitoring**: Unified view of all agent activities
 
 ## 🛠️ Prerequisites
 
