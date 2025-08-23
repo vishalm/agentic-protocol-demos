@@ -16,7 +16,7 @@ async def test_acp_server_import():
     print("🧪 Testing ACP server import...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_server", "acp_server.py")
+        spec = importlib.util.spec_from_file_location("acp_server", os.path.join(os.path.dirname(__file__), "acp_server.py"))
         acp_server = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_server)
         print("✅ ACP server imported successfully")
@@ -30,7 +30,7 @@ async def test_acp_client_import():
     print("\n🧪 Testing ACP client import...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_client", "acp_client.py")
+        spec = importlib.util.spec_from_file_location("acp_client", os.path.join(os.path.dirname(__file__), "acp_client.py"))
         acp_client = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_client)
         print("✅ ACP client imported successfully")
@@ -44,7 +44,7 @@ async def test_acp_models():
     print("\n🧪 Testing ACP data models...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_server", "acp_server.py")
+        spec = importlib.util.spec_from_file_location("acp_server", os.path.join(os.path.dirname(__file__), "acp_server.py"))
         acp_server = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_server)
         
@@ -97,7 +97,7 @@ async def test_acp_server_creation():
     print("\n🧪 Testing ACP server creation...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_server", "acp_server.py")
+        spec = importlib.util.spec_from_file_location("acp_server", os.path.join(os.path.dirname(__file__), "acp_server.py"))
         acp_server = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_server)
         
@@ -117,7 +117,7 @@ async def test_acp_client_creation():
     print("\n🧪 Testing ACP client creation...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_client", "acp_client.py")
+        spec = importlib.util.spec_from_file_location("acp_client", os.path.join(os.path.dirname(__file__), "acp_client.py"))
         acp_client = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_client)
         
@@ -137,7 +137,7 @@ async def test_acp_agent_manifest():
     print("\n🧪 Testing ACP agent manifest...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("acp_client", "acp_client.py")
+        spec = importlib.util.spec_from_file_location("acp_client", os.path.join(os.path.dirname(__file__), "acp_client.py"))
         acp_client = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(acp_client)
         

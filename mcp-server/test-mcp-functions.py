@@ -15,7 +15,7 @@ def test_mesh_prompt():
     print("🧪 Testing mesh prompt function...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("mcp_server_test", "mcp-server-test.py")
+        spec = importlib.util.spec_from_file_location("mcp_server_test", os.path.join(os.path.dirname(__file__), "mcp-server-test.py"))
         mcp_server_test = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mcp_server_test)
         mesh = mcp_server_test.mesh
@@ -32,7 +32,7 @@ def test_email_draft():
     print("\n🧪 Testing email draft function...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("mcp_server_test", "mcp-server-test.py")
+        spec = importlib.util.spec_from_file_location("mcp_server_test", os.path.join(os.path.dirname(__file__), "mcp-server-test.py"))
         mcp_server_test = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mcp_server_test)
         write_email_draft = mcp_server_test.write_email_draft
@@ -54,7 +54,7 @@ def test_contact_info():
     print("\n🧪 Testing contact info function...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("mcp_server_test", "mcp-server-test.py")
+        spec = importlib.util.spec_from_file_location("mcp_server_test", os.path.join(os.path.dirname(__file__), "mcp-server-test.py"))
         mcp_server_test = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mcp_server_test)
         get_contact_info = mcp_server_test.get_contact_info
@@ -82,7 +82,7 @@ def test_email_template():
     print("\n🧪 Testing email template suggestions...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("mcp_server_test", "mcp-server-test.py")
+        spec = importlib.util.spec_from_file_location("mcp_server_test", os.path.join(os.path.dirname(__file__), "mcp-server-test.py"))
         mcp_server_test = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mcp_server_test)
         suggest_email_template = mcp_server_test.suggest_email_template
@@ -107,7 +107,7 @@ def test_resources():
     print("\n🧪 Testing resource functions...")
     try:
         import importlib.util
-        spec = importlib.util.spec_from_file_location("mcp_server_test", "mcp-server-test.py")
+        spec = importlib.util.spec_from_file_location("mcp_server_test", os.path.join(os.path.dirname(__file__), "mcp-server-test.py"))
         mcp_server_test = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mcp_server_test)
         write_3way_intro = mcp_server_test.write_3way_intro

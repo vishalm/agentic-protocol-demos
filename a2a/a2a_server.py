@@ -13,10 +13,14 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from a2a_config import default_server_config
-from agent_capabilities import mesh_capabilities
-from agent_manager import agent_manager
-from task_orchestrator import task_orchestrator
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from a2a.a2a_config import default_server_config
+from shared.agent_capabilities import mesh_capabilities
+from shared.agent_manager import agent_manager
+from shared.task_orchestrator import task_orchestrator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

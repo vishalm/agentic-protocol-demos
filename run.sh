@@ -112,19 +112,15 @@ check_project_structure() {
     print_status "Checking project structure..."
     
     REQUIRED_FILES=(
-        "hybrid_server.py"
-        "a2a_server.py"
-        "agent_manager.py"
-        "task_orchestrator.py"
-        "a2a_config.py"
-        "agent_capabilities.py"
-        "acp_server.py"
-        "acp_client.py"
-        "test-acp-functions.py"
-        "prompts/mesh.md"
-        "email-examples/3-way-intro.md"
-        "email-examples/call-follow-up.md"
-        "directory.csv"
+        "a2a/a2a_server.py"
+        "shared/agent_manager.py"
+        "shared/task_orchestrator.py"
+        "a2a/a2a_config.py"
+        "shared/agent_capabilities.py"
+        "acp/acp_server.py"
+        "acp/acp_client.py"
+        "acp/test-acp-functions.py"
+        "mcp-server-files/mcp-server-test.py"
         "pyproject.toml"
         "requirements.txt"
     )
@@ -186,7 +182,7 @@ validate_configuration() {
     
     # Test A2A configuration
     print_status "Testing A2A configuration..."
-    uv run python a2a_config.py
+    uv run python a2a/a2a_config.py
     
     if [ $? -eq 0 ]; then
         print_success "A2A configuration validation passed"
@@ -201,7 +197,7 @@ run_tests() {
     
     # Run ACP function tests
     print_status "Running ACP function tests..."
-    if uv run python test-acp-functions.py; then
+    if uv run python acp/test-acp-functions.py; then
         print_success "ACP function tests passed"
     else
         print_warning "Some ACP function tests failed, but continuing..."
@@ -209,7 +205,7 @@ run_tests() {
     
     # Run MCP function tests
     print_status "Running MCP function tests..."
-    if uv run python test-mcp-functions.py; then
+    if uv run python mcp/test-mcp-functions.py; then
         print_success "MCP function tests passed"
     else
         print_warning "Some MCP function tests failed, but continuing..."
@@ -224,47 +220,47 @@ stop_servers() {
     
     local stopped_count=0
     
-    # Stop hybrid server
-    if pgrep -f "hybrid_server.py" > /dev/null; then
-        print_status "Stopping hybrid server..."
-        pkill -f "hybrid_server.py"
+    # Stop MCP server
+    if pgrep -f "mcp-server-files/mcp-server-test.py" > /dev/null; then
+        print_status "Stopping MCP server..."
+        pkill -f "mcp-server-files/mcp-server-test.py"
         sleep 2
-        if ! pgrep -f "hybrid_server.py" > /dev/null; then
-            print_success "Hybrid server stopped"
+        if ! pgrep -f "mcp-server-files/mcp-server-test.py" > /dev/null; then
+            print_success "MCP server stopped"
             ((stopped_count++))
         else
-            print_warning "Force killing hybrid server..."
-            pkill -9 -f "hybrid_server.py"
+            print_warning "Force killing MCP server..."
+            pkill -9 -f "mcp-server-files/mcp-server-test.py"
             ((stopped_count++))
         fi
     fi
     
     # Stop A2A server
-    if pgrep -f "a2a_server.py" > /dev/null; then
+    if pgrep -f "a2a/a2a_server.py" > /dev/null; then
         print_status "Stopping A2A server..."
-        pkill -f "a2a_server.py"
+        pkill -f "a2a/a2a_server.py"
         sleep 2
-        if ! pgrep -f "a2a_server.py" > /dev/null; then
+        if ! pgrep -f "a2a/a2a_server.py" > /dev/null; then
             print_success "A2A server stopped"
             ((stopped_count++))
         else
             print_warning "Force killing A2A server..."
-            pkill -9 -f "a2a_server.py"
+            pkill -9 -f "a2a/a2a_server.py"
             ((stopped_count++))
         fi
     fi
     
     # Stop ACP server
-    if pgrep -f "acp_server.py" > /dev/null; then
+    if pgrep -f "acp/acp_server.py" > /dev/null; then
         print_status "Stopping ACP server..."
-        pkill -f "acp_server.py"
+        pkill -f "acp/acp_server.py"
         sleep 2
-        if ! pgrep -f "acp_server.py" > /dev/null; then
+        if ! pgrep -f "acp/acp_server.py" > /dev/null; then
             print_success "ACP server stopped"
             ((stopped_count++))
         else
             print_warning "Force killing ACP server..."
-            pkill -9 -f "acp_server.py"
+            pkill -9 -f "acp/acp_server.py"
             ((stopped_count++))
         fi
     fi
@@ -277,24 +273,41 @@ stop_servers() {
     fi
 }
 
-# Function to start the hybrid server
-start_hybrid_server() {
-    print_header "Starting MESH Hybrid Server (MCP + A2A)"
+# Function to start the MCP server
+start_mcp_server() {
+    print_header "Starting MESH MCP Server"
     
     # Stop any existing servers first
     stop_servers
     
     print_status "Server will be available on:"
     echo "  - MCP: STDIO transport (for AI applications)"
+    echo ""
+    print_status "Press Ctrl+C to stop the server"
+    echo ""
+    
+    # Start the MCP server
+    print_status "Starting MCP server..."
+    uv run python mcp-server-files/mcp-server-test.py
+}
+
+# Function to start the A2A server
+start_a2a_server() {
+    print_header "Starting MESH A2A Server"
+    
+    # Stop any existing servers first
+    stop_servers
+    
+    print_status "Server will be available on:"
     echo "  - A2A: http://127.0.0.1:8080"
     echo "  - A2A WebSocket: ws://127.0.0.1:8080/ws"
     echo ""
     print_status "Press Ctrl+C to stop the server"
     echo ""
     
-    # Start the hybrid server
-    print_status "Starting hybrid server..."
-    uv run python hybrid_server.py
+    # Start the A2A server
+    print_status "Starting A2A server..."
+    uv run python a2a/a2a_server.py
 }
 
 # Function to start the ACP server
@@ -314,10 +327,10 @@ start_acp_server() {
     
     # Start the ACP server
     print_status "Starting ACP server..."
-    uv run python acp_server.py
+    uv run python acp/acp_server.py
 }
 
-# Function to start all servers (Hybrid + ACP)
+# Function to start all servers (MCP + A2A + ACP)
 start_all_servers() {
     print_header "Starting MESH All Servers (MCP + A2A + ACP)"
     
@@ -334,30 +347,39 @@ start_all_servers() {
     print_status "Press Ctrl+C to stop all servers"
     echo ""
     
-    # Start hybrid server in background
-    print_status "Starting hybrid server in background..."
-    uv run python hybrid_server.py &
-    HYBRID_PID=$!
+    # Start A2A server in background
+    print_status "Starting A2A server in background..."
+    uv run python a2a/a2a_server.py &
+    A2A_PID=$!
     
-    # Wait a moment for hybrid server to start
+    # Wait a moment for A2A server to start
     sleep 3
     
     # Start ACP server in background
     print_status "Starting ACP server in background..."
-    uv run python acp_server.py &
+    uv run python acp/acp_server.py &
     ACP_PID=$!
     
     # Wait a moment for ACP server to start
     sleep 3
     
+    # Start MCP server in background (it will run on STDIO)
+    print_status "Starting MCP server in background..."
+    uv run python mcp-server-files/mcp-server-test.py &
+    MCP_PID=$!
+    
+    # Wait a moment for MCP server to start
+    sleep 3
+    
     print_status "All servers started. PIDs:"
-    echo "  - Hybrid Server: $HYBRID_PID"
+    echo "  - A2A Server: $A2A_PID"
     echo "  - ACP Server: $ACP_PID"
+    echo "  - MCP Server: $MCP_PID"
     echo ""
     print_status "Monitoring servers... (Press Ctrl+C to stop all)"
     
-    # Wait for either server to stop
-    wait $HYBRID_PID $ACP_PID
+    # Wait for any server to stop
+    wait $A2A_PID $ACP_PID $MCP_PID
     
     # Cleanup if we get here
     stop_servers
@@ -400,33 +422,33 @@ show_server_status() {
     fi
     
     # Check if MCP server is running
-    if pgrep -f "hybrid_server.py" > /dev/null; then
+    if pgrep -f "mcp-server-files/mcp-server-test.py" > /dev/null; then
         print_success "MCP server is running"
         
         # Get process info
-        mcp_pid=$(pgrep -f "hybrid_server.py")
+        mcp_pid=$(pgrep -f "mcp-server-files/mcp-server-test.py")
         print_status "MCP server PID: $mcp_pid"
     else
         print_warning "MCP server is not running"
     fi
     
     # Check if A2A server process is running
-    if pgrep -f "a2a_server.py" > /dev/null; then
+    if pgrep -f "a2a/a2a_server.py" > /dev/null; then
         print_success "A2A server process is running"
         
         # Get process info
-        a2a_pid=$(pgrep -f "a2a_server.py")
+        a2a_pid=$(pgrep -f "a2a/a2a_server.py")
         print_status "A2A server PID: $a2a_pid"
     else
         print_warning "A2A server process is not running"
     fi
     
     # Check if ACP server process is running
-    if pgrep -f "acp_server.py" > /dev/null; then
+    if pgrep -f "acp/acp_server.py" > /dev/null; then
         print_success "ACP server process is running"
         
         # Get process info
-        acp_pid=$(pgrep -f "acp_server.py")
+        acp_pid=$(pgrep -f "acp/acp_server.py")
         print_status "ACP server PID: $acp_pid"
     else
         print_warning "ACP server process is not running"
@@ -445,8 +467,9 @@ show_usage() {
     echo "Options:"
     echo "  setup     - Setup environment and install dependencies"
     echo "  test      - Run tests only"
-    echo "  start     - Start the hybrid server (MCP + A2A)"
-    echo "  start-acp - Start the ACP server only"
+    echo "  start     - Start MCP server only"
+    echo "  start-a2a - Start A2A server only"
+    echo "  start-acp - Start ACP server only"
     echo "  start-all - Start all servers (MCP + A2A + ACP)"
     echo "  stop      - Stop running servers"
     echo "  restart   - Restart servers (stop + start)"
@@ -456,12 +479,13 @@ show_usage() {
     echo "Examples:"
     echo "  ./run.sh setup      # Setup everything"
     echo "  ./run.sh test       # Run tests only"
-    echo "  ./run.sh start      # Start hybrid server only"
+    echo "  ./run.sh start      # Start MCP server only"
+    echo "  ./run.sh start-a2a # Start A2A server only"
     echo "  ./run.sh start-acp  # Start ACP server only"
     echo "  ./run.sh start-all  # Start all servers"
     echo "  ./run.sh stop       # Stop running servers"
     echo "  ./run.sh restart    # Restart servers"
-    echo "  ./run.sh            # Full setup and start hybrid server"
+    echo "  ./run.sh            # Full setup and start all servers"
     echo ""
     echo "For more information, see README.md"
 }
@@ -471,19 +495,19 @@ cleanup() {
     print_status "Cleaning up..."
     
     # Kill any running server processes
-    if pgrep -f "hybrid_server.py" > /dev/null; then
-        print_status "Stopping hybrid server..."
-        pkill -f "hybrid_server.py"
+    if pgrep -f "mcp-server-files/mcp-server-test.py" > /dev/null; then
+        print_status "Stopping MCP server..."
+        pkill -f "mcp-server-files/mcp-server-test.py"
     fi
     
-    if pgrep -f "a2a_server.py" > /dev/null; then
+    if pgrep -f "a2a/a2a_server.py" > /dev/null; then
         print_status "Stopping A2A server..."
-        pkill -f "a2a_server.py"
+        pkill -f "a2a/a2a_server.py"
     fi
     
-    if pgrep -f "acp_server.py" > /dev/null; then
+    if pgrep -f "acp/acp_server.py" > /dev/null; then
         print_status "Stopping ACP server..."
-        pkill -f "acp_server.py"
+        pkill -f "acp/acp_server.py"
     fi
     
     print_success "Cleanup completed"
@@ -521,11 +545,18 @@ main() {
             exit 0
             ;;
         "start")
-            print_status "Starting hybrid server only..."
+            print_status "Starting MCP server only..."
             check_python_version
             check_and_install_uv
             check_project_structure
-            start_hybrid_server
+            start_mcp_server
+            ;;
+        "start-a2a")
+            print_status "Starting A2A server only..."
+            check_python_version
+            check_and_install_uv
+            check_project_structure
+            start_a2a_server
             ;;
         "start-acp")
             print_status "Starting ACP server only..."
@@ -552,7 +583,7 @@ main() {
             check_and_install_uv
             check_project_structure
             stop_servers
-            start_hybrid_server
+            start_all_servers
             ;;
         "status")
             show_server_status
@@ -564,7 +595,7 @@ main() {
             ;;
         "")
             # No arguments - run full setup and start
-            print_status "Running full setup and start hybrid server..."
+            print_status "Running full setup and start all servers..."
             ;;
         *)
             print_error "Unknown option: $1"
@@ -582,7 +613,7 @@ main() {
         install_dependencies
         validate_configuration
         run_tests
-        start_hybrid_server
+        start_all_servers
     fi
 }
 

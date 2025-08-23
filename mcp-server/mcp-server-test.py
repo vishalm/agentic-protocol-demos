@@ -17,7 +17,7 @@ mcp = FastMCP("MESH")
 def mesh(user_name: str, user_title: str) -> str:
     """Global instructions for MESH (Model Exchange Server Handler)"""
     try:
-        with open("prompts/mesh.md", "r", encoding="utf-8") as file:
+        with open("../prompts/mesh.md", "r", encoding="utf-8") as file:
             template = file.read()
         return template.format(user_name=user_name, user_title=user_title)
     except FileNotFoundError:
@@ -34,7 +34,7 @@ Note: Main prompt file not found - using fallback template."""
 def write_3way_intro() -> str:
     """Example of a 3-way introduction email"""
     try:
-        with open("email-examples/3-way-intro.md", "r", encoding="utf-8") as file:
+        with open("../email-examples/3-way-intro.md", "r", encoding="utf-8") as file:
             return file.read()
     except FileNotFoundError:
         return "# 3-Way Introduction Template\n\nTemplate file not available. Please check file path."
@@ -45,7 +45,7 @@ def write_3way_intro() -> str:
 def write_call_followup() -> str:
     """Example of a call follow-up email"""
     try:
-        with open("email-examples/call-follow-up.md", "r", encoding="utf-8") as file:
+        with open("../email-examples/call-follow-up.md", "r", encoding="utf-8") as file:
             return file.read()
     except FileNotFoundError:
         return "# Call Follow-up Template\n\nTemplate file not available. Please check file path."
@@ -56,7 +56,7 @@ def write_call_followup() -> str:
 def get_directory() -> str:
     """Get the entire directory of contacts"""
     try:
-        with open("directory.csv", "r", encoding="utf-8") as file:
+        with open("../directory.csv", "r", encoding="utf-8") as file:
             return file.read()
     except FileNotFoundError:
         return "Name,Email,Url,Bio\nError,error@example.com,https://example.com,Directory file not available"

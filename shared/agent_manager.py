@@ -14,8 +14,12 @@ from enum import Enum
 import httpx
 import websockets
 
-from a2a_config import default_server_config
-from agent_capabilities import mesh_capabilities
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from a2a.a2a_config import default_server_config
+from shared.agent_capabilities import mesh_capabilities
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

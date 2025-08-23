@@ -12,7 +12,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
 
-from agent_manager import agent_manager
+from shared.agent_manager import agent_manager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
