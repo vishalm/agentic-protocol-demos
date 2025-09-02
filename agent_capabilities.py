@@ -48,7 +48,7 @@ class MESHAgentCapabilities:
             "version": "1.0.0",
             "description": "Model Exchange Server Handler - Professional email management and networking assistant",
             "author": "Vishal Mishra",
-            "repository": "https://github.com/vishalm/mcp-demo",
+            "repository": "https://github.com/vishalm/agentic-protocol-demos",
             "protocols": ["MCP", "A2A"],
             "transports": ["STDIO", "HTTP", "WebSocket"]
         }

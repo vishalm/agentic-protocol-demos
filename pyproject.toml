@@ -1,7 +1,7 @@
 [project]
-name = "mcp-demo"
+name = "agentic-protocol-demos"
 version = "0.1.0"
-description = "Demo for MCP Server with A2A Integration"
+description = "Agentic Protocol Demos - MCP Server with A2A Integration"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
