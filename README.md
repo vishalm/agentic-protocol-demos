@@ -1,120 +1,230 @@
 # MESH - Model Exchange Server Handler
 
-> **A powerful Model Context Protocol (MCP) server that transforms any AI application into a sophisticated virtual assistant with email management, contact management, and professional networking capabilities.**
+> **A comprehensive multi-protocol AI agent server that transforms any AI application into a sophisticated virtual assistant with email management, contact management, and professional networking capabilities.**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
-[![MCP](https://img.shields.io/badge/MCP-1.12+-green.svg)](https://modelcontextprotocol.io)
+[![MCP](https://img.shields.io/badge/MCP-1.6+-green.svg)](https://modelcontextprotocol.io)
 [![A2A](https://img.shields.io/badge/A2A-Protocol-orange.svg)](https://a2aprotocol.ai)
+[![ACP](https://img.shields.io/badge/ACP-Protocol-purple.svg)](https://agentcommunicationprotocol.dev)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🎯 Purpose & Vision
+## 🎯 Overview
 
-### **Why MESH Exists**
-In today's AI landscape, applications often lack the tools needed for professional workflows. MESH bridges this gap by providing:
+MESH (Model Exchange Server Handler) is a cutting-edge multi-protocol AI agent server that bridges the gap between AI applications and professional workflows. It provides seamless integration with three major AI agent protocols:
 
-- **🔗 MCP Integration**: Seamless integration with any MCP-compatible AI application
-- **📧 Professional Workflows**: Streamline email management and networking tasks
-- **📋 Template Management**: AI-powered email template suggestions
-- **👥 Contact Management**: Access and search through contact directories
+- **MCP (Model Context Protocol)** - Direct AI application integration via STDIO
+- **A2A (Agent-to-Agent)** - Multi-agent collaboration via HTTP/WebSocket  
+- **ACP (Agent Communication Protocol)** - Standardized agent interoperability via REST API
 
-### **The Problem We Solve**
-- **Tool Limitations**: AI applications lack professional email and networking tools
-- **Workflow Complexity**: Professional tasks require coordination across multiple systems
-- **Template Management**: Creating professional emails from scratch is time-consuming
-- **Contact Organization**: Managing professional relationships at scale is challenging
+### 🚀 Key Features
 
-### **Our Solution**
-MESH provides a comprehensive toolset that:
-- ✅ **Enhances AI Applications**: Adds professional capabilities to any MCP client
-- ✅ **Streamlines Workflows**: Automates email composition and contact management
-- ✅ **Improves Productivity**: Provides ready-to-use templates and suggestions
-- ✅ **Maintains Professional Standards**: Ensures consistent, high-quality communication
+- **📧 Professional Email Management** - Create, edit, and manage professional emails with AI-powered templates
+- **👥 Contact Database Operations** - Search and retrieve contact information from comprehensive directories
+- **🤝 Strategic Networking** - Facilitate professional introductions and relationship building
+- **🔄 Multi-Agent Collaboration** - Coordinate with other AI agents for enhanced capabilities
+- **⚡ Three-Protocol Support** - MCP, A2A, and ACP protocols in a single server
+- **🛠️ Production Ready** - Comprehensive testing, configuration validation, and deployment scripts
+
+## 🏗️ Architecture
+
+MESH implements a sophisticated three-layer architecture that supports multiple AI agent protocols simultaneously:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MESH Server Ecosystem                        │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
+│  │ MCP Server  │  │ A2A Server  │  │ ACP Server  │            │
+│  │ (STDIO)     │  │ (HTTP/WS)   │  │ (REST API)  │            │
+│  └─────────────┘  └─────────────┘  └─────────────┘            │
+│         │               │               │                      │
+│         └───────────────┼───────────────┘                      │
+│                         ▼                                      │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Shared Core Services                       │   │
+│  │  • Email Management  • Contact Management              │   │
+│  │  • Template System   • Agent Management                │   │
+│  │  • Task Orchestration • Message Routing                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Protocol Comparison
+
+| Protocol | Transport | Use Case | Primary Clients |
+|----------|-----------|----------|-----------------|
+| **MCP** | STDIO | AI assistants, coding tools | Claude Desktop, Cursor, MCP Inspector |
+| **A2A** | HTTP/WebSocket | Multi-agent workflows | A2A Inspector, Web applications |
+| **ACP** | REST API | Enterprise integration | Custom clients, third-party systems |
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.11 or higher
-- uv package manager (recommended)
 
-### Installation
+- **Python 3.11+** - Modern Python with async support
+- **[uv](https://github.com/astral-sh/uv)** - Fast Python package manager (auto-installed)
+- **Git** - For cloning the repository
 
-#### Install uv (if not already installed):
+### One-Command Setup
+
 ```bash
-# macOS/Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-#### Clone the repository:
-```bash
+# Clone and setup everything
 git clone https://github.com/vishalm/agentic-protocol-demos.git
 cd agentic-protocol-demos
+./run.sh
 ```
 
-#### Install dependencies:
+This single command will:
+- ✅ Check Python version and install uv if needed
+- ✅ Create virtual environment and install dependencies
+- ✅ Validate configuration and run tests
+- ✅ Start the hybrid server (MCP + A2A)
+
+### Manual Setup
+
 ```bash
+# Install uv package manager
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone repository
+git clone https://github.com/vishalm/agentic-protocol-demos.git
+cd agentic-protocol-demos
+
+# Install dependencies
 uv sync
-```
 
-#### Test the server:
-```bash
-# Test server functions
+# Run tests
 uv run python test-mcp-functions.py
+uv run python test-acp-functions.py
 
-# Run server in development mode
-uv run mcp dev mcp-server-test.py
+# Start servers
+./run.sh start      # Hybrid server (MCP + A2A)
+./run.sh start-acp  # ACP server only
+./run.sh start-all  # All servers
 ```
-
-### Configuration
-
-#### Adding MESH to Your AI Application
-Add the following configuration to your AI application (e.g., Claude Desktop, Cursor):
-
-```json
-{
-  "mcpServers": {
-    "MESH": {
-      "command": "/Users/vishal.mishra/.local/bin/uv",
-      "args": [
-        "--directory",
-        "/Users/vishal.mishra/workspace/self/agentic-protocol-demos",
-        "run",
-        "--with", "mcp",
-        "--with", "fastmcp",
-        "python",
-        "mcp-server-test.py"
-      ]
-    }
-  }
-}
-```
-
-💡 **Pro tip**: Run `python validate-config.py` to automatically generate the correct configuration for your system!
 
 ## 🔧 Server Options
 
-### Simple MCP Server (Recommended for Testing)
+### 1. Simple MCP Server (Recommended for Testing)
 - **File**: `mcp-server-test.py`
 - **Use Case**: Testing with MCP Inspector, basic MCP integration
 - **Features**: Clean shutdown, no hanging issues, easy debugging
 - **Command**: `python mcp-server-test.py`
 
-### ACP Server (Agent Communication Protocol)
+### 2. Enhanced MCP Server (Advanced Features)
+- **File**: `mcp-server-enhanced.py`
+- **Use Case**: Advanced MCP features with enhanced tools and capabilities
+- **Features**: Enhanced email tools, authentication, logging, sampling, elicitation
+- **Command**: `uv run mcp dev mcp-server-enhanced.py`
+
+### 3. Hybrid Server (Production Ready)
+- **File**: `hybrid_server.py`
+- **Use Case**: Production deployment with both MCP and A2A protocols
+- **Features**: Multi-protocol support, subprocess management, graceful shutdown
+- **Command**: `python hybrid_server.py` or `./run.sh start`
+
+### 4. ACP Server (Enterprise Integration)
 - **File**: `acp_server.py`
 - **Use Case**: Multi-agent collaboration, standardized agent communication
 - **Features**: RESTful API, agent discovery, task management, message routing
-- **Command**: `python acp_server.py`
+- **Command**: `python acp_server.py` or `./run.sh start-acp`
 - **Port**: 8081 (http://127.0.0.1:8081)
 
-### Hybrid Server (Advanced Usage)
-- **File**: `hybrid_server.py`
-- **Use Case**: Production deployment with both MCP and A2A protocols
-- **Features**: Multi-protocol support, subprocess management
-- **Command**: `python hybrid_server.py` (or use `./run.sh start`)
+## 🧪 Testing & Debugging
 
-> **Note**: The simple MCP server is recommended for testing and development. Use the ACP server for multi-agent scenarios, and the hybrid server only when you need both MCP and A2A protocols.
+### Project Status Check
+
+```bash
+# Check server status
+./run.sh status
+
+# Run comprehensive tests
+./run.sh test
+
+# Check specific components
+./run.sh setup  # Full environment setup
+```
+
+### MCP Inspector Testing
+
+The MCP Inspector helps debug MCP protocol communication:
+
+```bash
+# Install MCP Inspector
+pip install mcp-inspector
+
+# Start MESH server
+python mcp-server-test.py
+
+# Launch MCP Inspector
+mcp-inspector
+```
+
+**Configuration for MCP Inspector:**
+- Transport: STDIO
+- Command: `python mcp-server-test.py` (for basic server)
+- Command: `uv run mcp dev mcp-server-enhanced.py` (for enhanced server)
+- Working Directory: Your MESH project folder
+
+### A2A Inspector Testing
+
+Test A2A protocol communication:
+
+```bash
+# Start A2A server
+./run.sh start
+
+# Access A2A Inspector
+# Navigate to: http://127.0.0.1:8080
+# Or use online: https://a2aprotocol.ai/inspector
+```
+
+### ACP API Testing
+
+Test ACP server functionality:
+
+```bash
+# Start ACP server
+./run.sh start-acp
+
+# Test with client
+python acp_client.py
+
+# Access API docs
+# Navigate to: http://127.0.0.1:8081/docs
+```
+
+## 📊 Available Tools & Capabilities
+
+### MCP Tools
+
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `write_email_draft` | Create professional email drafts | `recipient_email`, `subject`, `body` |
+| `get_contact_info` | Search contact database | `name` (optional) |
+| `suggest_email_template` | Get AI-powered email templates | `context` |
+
+### A2A Methods
+
+| Method | Description | Use Case |
+|--------|-------------|----------|
+| `initialize` | Initialize agent connection | Setup and handshake |
+| `capabilities` | Get agent capabilities | Discovery and planning |
+| `write_email_draft` | Create email drafts | Professional communication |
+| `get_contact_info` | Search contacts | Relationship management |
+| `discover_agents` | Find other agents | Multi-agent coordination |
+| `delegate_task` | Delegate to other agents | Workflow orchestration |
+| `collaborate` | Initiate collaboration | Team coordination |
+
+### ACP Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/agents/register` | POST | Register new agents |
+| `/agents` | GET | List registered agents |
+| `/messages` | POST | Send messages to agents |
+| `/tasks` | GET | List and monitor tasks |
+| `/health` | GET | Server health check |
 
 ## 🚀 Real-World Use Cases
 
@@ -1225,6 +1335,241 @@ export LOG_LEVEL=DEBUG
 curl http://127.0.0.1:8080/health
 ```
 
+## 🔗 Integration Examples
+
+### Claude Desktop Integration
+
+Add to your Claude Desktop configuration:
+
+**Basic MCP Server:**
+```json
+{
+  "mcpServers": {
+    "MESH": {
+      "command": "/path/to/uv",
+      "args": [
+        "--directory",
+        "/path/to/agentic-protocol-demos",
+        "run",
+        "--with", "mcp",
+        "--with", "fastmcp",
+        "python",
+        "mcp-server-test.py"
+      ]
+    }
+  }
+}
+```
+
+**Enhanced MCP Server:**
+```json
+{
+  "mcpServers": {
+    "MESH-Enhanced": {
+      "command": "/path/to/uv",
+      "args": [
+        "--directory",
+        "/path/to/agentic-protocol-demos",
+        "run",
+        "mcp",
+        "dev",
+        "mcp-server-enhanced.py"
+      ]
+    }
+  }
+}
+```
+
+### Cursor Integration
+
+Add to your Cursor MCP configuration:
+
+**Basic MCP Server:**
+```json
+{
+  "mcpServers": {
+    "MESH": {
+      "command": "/path/to/uv",
+      "args": [
+        "--directory",
+        "/path/to/agentic-protocol-demos",
+        "run",
+        "--with", "mcp",
+        "--with", "fastmcp",
+        "python",
+        "mcp-server-test.py"
+      ]
+    }
+  }
+}
+```
+
+**Enhanced MCP Server:**
+```json
+{
+  "mcpServers": {
+    "MESH-Enhanced": {
+      "command": "/path/to/uv",
+      "args": [
+        "--directory",
+        "/path/to/agentic-protocol-demos",
+        "run",
+        "mcp",
+        "dev",
+        "mcp-server-enhanced.py"
+      ]
+    }
+  }
+}
+```
+
+### Custom Client Integration
+
+```python
+import httpx
+
+# A2A Protocol
+async with httpx.AsyncClient() as client:
+    response = await client.post(
+        "http://127.0.0.1:8080/",
+        json={
+            "jsonrpc": "2.0",
+            "id": "1",
+            "method": "write_email_draft",
+            "params": {
+                "recipient": "colleague@company.com",
+                "subject": "Project Update",
+                "body": "Hi there, here's the latest update..."
+            }
+        }
+    )
+
+# ACP Protocol
+async with httpx.AsyncClient() as client:
+    response = await client.post(
+        "http://127.0.0.1:8081/messages",
+        json={
+            "type": "task",
+            "sender": "my-client",
+            "task_type": "email_draft",
+            "parameters": {
+                "recipient_email": "colleague@company.com",
+                "subject": "Project Update",
+                "body": "Hi there, here's the latest update..."
+            }
+        }
+    )
+```
+
+## 📁 Project Structure
+
+```
+agentic-protocol-demos/
+├── 📄 Core Servers
+│   ├── mcp-server-test.py        # Simple MCP server (testing)
+│   ├── hybrid_server.py          # Hybrid server (MCP + A2A)
+│   ├── a2a_server.py            # A2A protocol server
+│   └── acp_server.py            # ACP protocol server
+│
+├── 🧠 Agent Management
+│   ├── agent_manager.py          # Agent discovery and management
+│   ├── task_orchestrator.py      # Workflow orchestration
+│   ├── agent_capabilities.py     # Agent skill definitions
+│   └── a2a_config.py            # A2A configuration
+│
+├── 🧪 Testing & Validation
+│   ├── test-mcp-functions.py     # MCP function testing
+│   ├── test-acp-functions.py     # ACP function testing
+│   ├── acp_client.py            # ACP client for testing
+│   └── validate-config.py        # Configuration generator
+│
+├── 📚 Resources & Templates
+│   ├── prompts/
+│   │   └── mesh.md              # Main prompt template
+│   ├── email-examples/
+│   │   ├── 3-way-intro.md       # Introduction template
+│   │   └── call-follow-up.md    # Follow-up template
+│   └── directory.csv            # Contact directory
+│
+├── ⚙️ Configuration & Setup
+│   ├── run.sh                   # One-command setup script
+│   ├── pyproject.toml           # Project dependencies
+│   ├── requirements.txt         # Python requirements
+│   └── mcp-config.json          # MCP configuration example
+│
+└── 📖 Documentation
+    ├── README.md                # This file
+    ├── LICENSE                  # MIT License
+    └── resources/               # Documentation images
+```
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+#### Port Already in Use
+```bash
+# Check what's using the port
+lsof -i :8080
+lsof -i :8081
+
+# Stop conflicting processes
+./run.sh stop
+
+# Or use different ports
+export A2A_PORT=8082
+export ACP_PORT=8083
+./run.sh start
+```
+
+#### Python Version Issues
+```bash
+# Check Python version
+python3 --version
+
+# Install Python 3.11+ if needed
+# macOS: brew install python@3.11
+# Ubuntu: sudo apt install python3.11
+```
+
+#### Dependency Issues
+```bash
+# Clean install
+rm -rf .venv
+uv sync
+
+# Or use pip fallback
+pip install -r requirements.txt
+```
+
+#### MCP Integration Issues
+```bash
+# Test MCP functions first
+python test-mcp-functions.py
+
+# Generate correct configuration
+python validate-config.py
+
+# Test with MCP Inspector
+pip install mcp-inspector
+mcp-inspector
+```
+
+### Debug Mode
+
+```bash
+# Enable verbose logging
+export LOG_LEVEL=DEBUG
+./run.sh start
+
+# View real-time logs
+./run.sh status
+
+# Check server health
+curl http://127.0.0.1:8080/health  # A2A
+curl http://127.0.0.1:8081/health  # ACP
+```
+
 ## 🔗 API Reference
 
 ### A2A Endpoints
@@ -1252,16 +1597,35 @@ curl http://127.0.0.1:8080/health
 4. Push to branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
+### Development Setup
+
+```bash
+# Clone your fork
+git clone https://github.com/yourusername/agentic-protocol-demos.git
+cd agentic-protocol-demos
+
+# Setup development environment
+./run.sh setup
+
+# Run tests
+./run.sh test
+
+# Start development server
+./run.sh start
+```
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **MCP Community**: For the Model Context Protocol specification
-- **A2A Protocol**: For the Agent-to-Agent communication standards
-- **FastAPI**: For the robust web framework
-- **FastMCP**: For the efficient MCP implementation
+- **MCP Community** - For the Model Context Protocol specification
+- **A2A Protocol** - For the Agent-to-Agent communication standards  
+- **ACP Protocol** - For the Agent Communication Protocol specification
+- **FastAPI** - For the robust web framework
+- **FastMCP** - For the efficient MCP implementation
+- **uv** - For the fast Python package manager
 
 ## 📞 Support
 
@@ -1271,4 +1635,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Ready to transform your AI applications with MESH? Start with `./run.sh start` and explore the future of AI collaboration! 🚀**
+**Ready to transform your AI applications with MESH? Start with `./run.sh` and explore the future of AI collaboration! 🚀**

@@ -297,6 +297,31 @@ start_hybrid_server() {
     uv run python hybrid_server.py
 }
 
+# Function to start the enhanced MCP server
+start_enhanced_mcp_server() {
+    print_header "Starting MESH Enhanced MCP Server"
+    
+    # Stop any existing servers first
+    stop_servers
+    
+    print_status "Enhanced MCP Server features:"
+    echo "  - ✅ Ping: Health monitoring and connection verification"
+    echo "  - ✅ Sampling: AI-powered text and image generation"
+    echo "  - ✅ Elicitation: Interactive information gathering"
+    echo "  - ✅ Roots: File system access control"
+    echo "  - ✅ Auth: Secure user management"
+    echo "  - ✅ Logging: Comprehensive activity tracking"
+    echo "  - ✅ Enhanced Tools: Advanced email and contact management"
+    echo ""
+    print_status "Server will be available via STDIO transport"
+    print_status "Press Ctrl+C to stop the server"
+    echo ""
+    
+    # Start the enhanced MCP server
+    print_status "Starting enhanced MCP server..."
+    uv run python mcp-server-enhanced.py
+}
+
 # Function to start the ACP server
 start_acp_server() {
     print_header "Starting MESH ACP Server"
@@ -443,25 +468,27 @@ show_usage() {
     echo "  ./run.sh [OPTION]"
     echo ""
     echo "Options:"
-    echo "  setup     - Setup environment and install dependencies"
-    echo "  test      - Run tests only"
-    echo "  start     - Start the hybrid server (MCP + A2A)"
-    echo "  start-acp - Start the ACP server only"
-    echo "  start-all - Start all servers (MCP + A2A + ACP)"
-    echo "  stop      - Stop running servers"
-    echo "  restart   - Restart servers (stop + start)"
-    echo "  status    - Check server status"
-    echo "  help      - Show this help message"
+    echo "  setup         - Setup environment and install dependencies"
+    echo "  test          - Run tests only"
+    echo "  start         - Start the hybrid server (MCP + A2A)"
+    echo "  start-enhanced- Start the enhanced MCP server (all MCP features)"
+    echo "  start-acp     - Start the ACP server only"
+    echo "  start-all     - Start all servers (MCP + A2A + ACP)"
+    echo "  stop          - Stop running servers"
+    echo "  restart       - Restart servers (stop + start)"
+    echo "  status        - Check server status"
+    echo "  help          - Show this help message"
     echo ""
     echo "Examples:"
-    echo "  ./run.sh setup      # Setup everything"
-    echo "  ./run.sh test       # Run tests only"
-    echo "  ./run.sh start      # Start hybrid server only"
-    echo "  ./run.sh start-acp  # Start ACP server only"
-    echo "  ./run.sh start-all  # Start all servers"
-    echo "  ./run.sh stop       # Stop running servers"
-    echo "  ./run.sh restart    # Restart servers"
-    echo "  ./run.sh            # Full setup and start hybrid server"
+    echo "  ./run.sh setup          # Setup everything"
+    echo "  ./run.sh test           # Run tests only"
+    echo "  ./run.sh start          # Start hybrid server only"
+    echo "  ./run.sh start-enhanced # Start enhanced MCP server (all features)"
+    echo "  ./run.sh start-acp      # Start ACP server only"
+    echo "  ./run.sh start-all      # Start all servers"
+    echo "  ./run.sh stop           # Stop running servers"
+    echo "  ./run.sh restart        # Restart servers"
+    echo "  ./run.sh                # Full setup and start hybrid server"
     echo ""
     echo "For more information, see README.md"
 }
@@ -526,6 +553,13 @@ main() {
             check_and_install_uv
             check_project_structure
             start_hybrid_server
+            ;;
+        "start-enhanced")
+            print_status "Starting enhanced MCP server only..."
+            check_python_version
+            check_and_install_uv
+            check_project_structure
+            start_enhanced_mcp_server
             ;;
         "start-acp")
             print_status "Starting ACP server only..."
